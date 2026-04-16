@@ -18,6 +18,10 @@ on:
       aliyun_username:
         description: '阿里云容器镜像服务登录用户名'
         required: true
+      architecture:
+        description: '指定拉取的镜像架构 (例如: linux/amd64, linux/arm64)'
+        required: true
+        default: 'linux/arm64'
 
 jobs:
   sync_to_aliyun:
@@ -38,6 +42,7 @@ jobs:
           namespace="${{ github.event.inputs.aliyun_namespace }}"
           region="${{ github.event.inputs.aliyun_region }}"
           registry="registry.${region}.aliyuncs.com"
+          arch="${{ github.event.inputs.architecture }}"
           
           # 将输入的逗号分隔字符串转换为数组
           IFS=',' read -r -a image_array <<< "$images"
@@ -45,8 +50,8 @@ jobs:
           for image in "${image_array[@]}"; do
             echo "Processing image: ${image}"
             
-            # 1. 拉取原始镜像
-            docker pull "${image}"
+            # 1. 拉取原始镜像 (指定架构)
+            docker pull --platform "${arch}" "${image}"
             
             # 2. 解析镜像名称和标签
             # 处理没有提供 tag 的情况，默认为 latest
