@@ -10,6 +10,7 @@ on:
       aliyun_namespace:
         description: '您的阿里云容器镜像服务命名空间 (Namespace)'
         required: true
+        default: 'dsx-test'
       aliyun_region:
         description: '您的阿里云 ACR 所在地域 (例如: cn-hangzhou, cn-beijing, cn-shanghai)'
         required: true
@@ -21,6 +22,8 @@ on:
 jobs:
   sync_to_aliyun:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Login to Aliyun Container Registry
         uses: docker/login-action@v3
